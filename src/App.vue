@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <button>Start Game</button>
+    <button @click="startGame">Start Game</button>
     <table class="minesweeper">
       <tr v-for="(row, rowIndex) in rows" :key="rowIndex">
         <Tile v-for="(col, colIndex) in cols" :key="colIndex"></Tile>
@@ -16,15 +16,18 @@ export default {
   name: 'App',
   data: () => {
     return {
-      rows: 10,
-      cols: 19,
+      rows: 0,
+      cols: 0,
     };
   },
   components: {
     Tile: Tile,
   },
   methods: {
-
+    startGame: function() {
+      this.rows = 10;
+      this.cols = 19;
+    },
   }
 };
 </script>
