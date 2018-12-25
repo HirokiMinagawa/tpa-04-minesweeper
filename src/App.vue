@@ -3,7 +3,7 @@
     <button @click="startGame">Start Game</button>
     <table class="minesweeper">
       <tr v-for="(row, rowIndex) in rows" :key="rowIndex">
-        <Tile v-for="(col, colIndex) in cols" :className="className" :key="colIndex"></Tile>
+        <Tile v-for="(col, colIndex) in cols" :className="classNames[rowIndex][colIndex]" :key="colIndex"></Tile>
       </tr>
     </table>
   </div>
@@ -18,7 +18,7 @@ export default {
     return {
       rows: 0,
       cols: 0,
-      className: 'unopened',
+      classNames: [],
     };
   },
   components: {
@@ -28,8 +28,18 @@ export default {
     startGame: function() {
       this.rows = 10;
       this.cols = 19;
+      this.initializeClassNames();
     },
-  }
+    initializeClassNames: function() {
+      for (let i = 0; i < this.rows; i += 1) {
+        this.classNames[i] = [];
+        const classNamesRow = this.classNames[i];
+        for (let t = 0; t < this.cols; t += 1) {
+          classNamesRow[t] = 'unopened';
+        }
+      }
+    },
+  },
 };
 </script>
 
