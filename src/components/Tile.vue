@@ -1,10 +1,11 @@
 <template>
-    <td class="unopened"></td>
+    <td :class="className"></td>
 </template>
 
 <script>
 export default {
   name: 'Tile',
+  props: ['className'],
 };
 </script>
 

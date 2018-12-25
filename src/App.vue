@@ -3,7 +3,7 @@
     <button @click="startGame">Start Game</button>
     <table class="minesweeper">
       <tr v-for="(row, rowIndex) in rows" :key="rowIndex">
-        <Tile v-for="(col, colIndex) in cols" :key="colIndex"></Tile>
+        <Tile v-for="(col, colIndex) in cols" :className="className" :key="colIndex"></Tile>
       </tr>
     </table>
   </div>
@@ -18,6 +18,7 @@ export default {
     return {
       rows: 0,
       cols: 0,
+      className: 'unopened',
     };
   },
   components: {
