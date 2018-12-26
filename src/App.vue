@@ -3,7 +3,10 @@
     <button @click="startGame">Start Game</button>
     <table class="minesweeper">
       <tr v-for="(row, rowIndex) in rows" :key="rowIndex">
-        <Tile v-for="(col, colIndex) in cols" :className="classNames[rowIndex][colIndex]" :key="colIndex"></Tile>
+        <Tile v-for="(col, colIndex) in cols" :className="classNames[rowIndex][colIndex]" 
+              :rowIndex="rowIndex" :colIndex="colIndex" :key="colIndex"
+              @clickedRight="setFlag"
+              ></Tile>
       </tr>
     </table>
   </div>
@@ -38,6 +41,13 @@ export default {
           classNamesRow[t] = 'unopened';
         }
       }
+    },
+    openTile: function() {
+      
+    },
+    setFlag: function(rowIndex, colIndex) {
+      this.classNames[rowIndex].splice(colIndex, 1, 'flagged');
+      console.log(this.classNames);
     },
   },
 };

@@ -1,11 +1,21 @@
 <template>
-    <td :class="className"></td>
+  <td :class="className" @click.right.prevent="clicked"></td>
 </template>
 
 <script>
 export default {
   name: 'Tile',
-  props: ['className'],
+  props: ['className', 'rowIndex', 'colIndex'],
+  data: function() {
+    return {
+      mined: Math.random() * 6 > 5,
+    };
+  },
+  methods: {
+    clicked: function() {
+      this.$emit('clickedRight', this.rowIndex, this.colIndex);
+    }
+  }
 };
 </script>
 
