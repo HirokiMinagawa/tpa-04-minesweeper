@@ -1,6 +1,6 @@
 <template>
   <td 
-    :class="className"
+    :class="status.state"
     @click.right.prevent="clickedRight"
     @click.left.prevent="clickedLeft"
   ></td>
@@ -9,13 +9,13 @@
 <script>
 export default {
   name: 'Tile',
-  props: ['className', 'rowIndex', 'colIndex'],
+  props: ['status'],
   methods: {
     clickedRight: function() {
-      this.$emit('clickedRight', this);
+      this.$emit('clickedRight', this.status);
     },
     clickedLeft: function() {
-      this.$emit('clickedLeft', this);
+      this.$emit('clickedLeft', this.status);
     },
   }
 };
