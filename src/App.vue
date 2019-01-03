@@ -60,7 +60,7 @@ export default {
      * @param {object} tileStatus
      * @return {boolean}
      */
-    openTile: function() {
+    openTile: function(tileStatus) {
       //if  タイルが地雷なら(tileStatus.mined)
       //  押されたタイルのクラスネームを"mine"に変更
       //  showAll():他のタイル全てに周りの地雷の数に応じたクラスネームを（地雷の場合は地雷を表示）
@@ -72,6 +72,10 @@ export default {
       //     このタイルのclassNameを"opened"に
       //     再帰処理部分(if the neighbor has not been opened yet)
       //        (open the neighbor)
+      // 
+      // 以下動作確認用
+      const mineCount = this.surroundedMineCount(tileStatus.row, tileStatus.col);
+      this.changeClassNameBasedMineCount(tileStatus.row, tileStatus.col, mineCount);
     },
     /**
      * show all tile
@@ -93,9 +97,24 @@ export default {
      * @param {number} col
      * @return {number}
      */
-    surroundedMineCount: function(){
-      // tilesを使って周辺の地雷の数を調べる
-      // return mineCount;
+    surroundedMineCount: function(row, col){
+      if (this.tiles[row][col].mined) return null;
+      let mineCount = 0;
+      const surroundedPosition = [
+        [-1, -1], [-1, 0], [-1, 1],
+        [0, -1], [0, 1],
+        [1, -1], [1, 0], [1, 1],
+      ];
+      for (let i = 0; i < surroundedPosition.length; i++) {
+        const rowChecking = row + surroundedPosition[i][0];
+        const colChecking = col + surroundedPosition[i][1];
+        //列か行が存在しない場合はcontinue
+        if (!(this.tiles[rowChecking] && this.tiles[rowChecking][colChecking])) continue;
+        if (this.tiles[rowChecking][colChecking].mined) {
+          mineCount += 1;
+        }
+      }
+      return mineCount;
     },
     /**
      * change ClassName Based on MineCount
@@ -105,8 +124,11 @@ export default {
      * @param {number} mineCount
      * @return {undefined}
      */
-    changeClassNameBasedMineCount: function() {
-      // 地雷の数に応じてクラスネームを変更
+    changeClassNameBasedMineCount: function(row, col, mineCount) {
+      if (mineCount > 9) return null;
+      this.tiles[row][col].state = `mine-neighbor-${mineCount}`;
+      if (mineCount == 0) this.tiles[row][col].state = 'opened';
+      if (this.tiles[row][col].mined) this.tiles[row][col].state = 'mine';
     },
     setFlag: function(tileStatus) {
       this.tiles[tileStatus.row][tileStatus.col].state = 'flagged';
