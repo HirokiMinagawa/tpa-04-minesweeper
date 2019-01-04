@@ -108,13 +108,22 @@ export default {
       for (let i = 0; i < surroundedPosition.length; i++) {
         const rowChecking = row + surroundedPosition[i][0];
         const colChecking = col + surroundedPosition[i][1];
-        //列か行が存在しない場合はcontinue
-        if (!(this.tiles[rowChecking] && this.tiles[rowChecking][colChecking])) continue;
+        if (this.isValidTile(rowChecking, colChecking)) continue;
         if (this.tiles[rowChecking][colChecking].mined) {
           mineCount += 1;
         }
       }
       return mineCount;
+    },
+    /**
+     * valid tile
+     * @function
+     * @param {number} row
+     * @param {number} col
+     * @return {boolean}
+     */
+    isValidTile(row, col) {
+      return !(this.tiles[row] && this.tiles[row][col]);
     },
     /**
      * change ClassName Based on MineCount
