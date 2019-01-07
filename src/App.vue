@@ -61,21 +61,16 @@ export default {
      * @return {boolean}
      */
     openTile: function(tileStatus) {
-      //if  タイルが地雷なら(tileStatus.mined)
-      //  押されたタイルのクラスネームを"mine"に変更
-      //  showAll():他のタイル全てに周りの地雷の数に応じたクラスネームを（地雷の場合は地雷を表示）
-      //else タイルが地雷じゃない
-      //  const mineCount = surroundedMineCount(tileStatus.row, tileStatus.col)
-      //  if 周辺に地雷がある時(mineCount > 0)
-      //     changeClassNameBasedMineCount(tileStatus.row, tileStatus.col, mineCount);
-      //   else 
-      //     このタイルのclassNameを"opened"に
-      //     再帰処理部分(if the neighbor has not been opened yet)
-      //        (open the neighbor)
-      // 
-      // 以下動作確認用
-      const mineCount = this.surroundedMineCount(tileStatus.row, tileStatus.col);
-      this.changeClassNameBasedMineCount(tileStatus.row, tileStatus.col, mineCount);
+      if (tileStatus.mined) {
+        this.showAll();
+      } else {
+        const mineCount = this.surroundedMineCount(tileStatus.row, tileStatus.col);
+        this.changeClassNameBasedMineCount(tileStatus.row, tileStatus.col, mineCount);
+        if (mineCount === 0) {
+          // 再帰処理部分(if the neighbor has not been opened yet)
+          // (open the neighbor)
+        }
+      }
     },
     /**
      * show all tile
@@ -83,12 +78,19 @@ export default {
      * @return {undefined}
      */
     showAll: function() {
-      //for 行
-      //  for 列
-      //    if 地雷なら
-      //      クラスネームを"mine"に変更
-      //    else
-      //      周りの地雷の個数に応じてクラスネームを変更 surroundedMineCount, changeClassNameBasedMineCount
+      for (let i = 0, len = this.tiles.length; i < len; i += 1) {
+        const row = i;
+        for (let t = 0, len = this.tiles[row].length; t < len; t += 1) {
+          const col = t;
+          const tileStatus = this.tiles[row][col];
+          if (tileStatus.mined) {
+            tileStatus.state = 'mine';
+          } else {
+            const mineCount = this.surroundedMineCount(row, col);
+            this.changeClassNameBasedMineCount(row, col, mineCount);
+          }
+        }
+      }
     },
     /**
      * count mine surrounded
@@ -98,7 +100,6 @@ export default {
      * @return {number}
      */
     surroundedMineCount: function(row, col){
-      if (this.tiles[row][col].mined) return null;
       let mineCount = 0;
       const surroundedPosition = [
         [-1, -1], [-1, 0], [-1, 1],
@@ -134,10 +135,8 @@ export default {
      * @return {undefined}
      */
     changeClassNameBasedMineCount: function(row, col, mineCount) {
-      if (mineCount > 9) return null;
       this.tiles[row][col].state = `mine-neighbor-${mineCount}`;
       if (mineCount == 0) this.tiles[row][col].state = 'opened';
-      if (this.tiles[row][col].mined) this.tiles[row][col].state = 'mine';
     },
     setFlag: function(tileStatus) {
       this.tiles[tileStatus.row][tileStatus.col].state = 'flagged';
