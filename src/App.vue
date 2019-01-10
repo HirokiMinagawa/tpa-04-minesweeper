@@ -58,17 +58,18 @@ export default {
      * open tile
      * @function
      * @param {object} tileStatus
-     * @return {boolean}
+     * @return {undefined}
      */
     openTile: function(tileStatus) {
       if (tileStatus.mined) {
         this.showAll();
       } else {
-        const mineCount = this.surroundedMineCount(tileStatus.row, tileStatus.col);
-        this.changeClassNameBasedMineCount(tileStatus.row, tileStatus.col, mineCount);
+        const row = tileStatus.row;
+        const col = tileStatus.col;
+        const mineCount = this.surroundedMineCount(row, col);
+        this.changeClassNameBasedMineCount(row, col, mineCount);
         if (mineCount === 0) {
-          // 再帰処理部分(if the neighbor has not been opened yet)
-          // (open the neighbor)
+          this.loopNeighborWithCallback(row, col, this.opneNeighbor);
         }
       }
     },
@@ -101,19 +102,7 @@ export default {
      */
     surroundedMineCount: function(row, col){
       let mineCount = 0;
-      const surroundedPosition = [
-        [-1, -1], [-1, 0], [-1, 1],
-        [0, -1], [0, 1],
-        [1, -1], [1, 0], [1, 1],
-      ];
-      for (let i = 0; i < surroundedPosition.length; i++) {
-        const rowChecking = row + surroundedPosition[i][0];
-        const colChecking = col + surroundedPosition[i][1];
-        if (this.isValidTile(rowChecking, colChecking)) continue;
-        if (this.tiles[rowChecking][colChecking].mined) {
-          mineCount += 1;
-        }
-      }
+      mineCount = this.loopNeighborWithCallback(row, col, this.plusMineCount, mineCount);
       return mineCount;
     },
     /**
@@ -138,8 +127,70 @@ export default {
       this.tiles[row][col].state = `mine-neighbor-${mineCount}`;
       if (mineCount == 0) this.tiles[row][col].state = 'opened';
     },
+    /**
+     * set flag
+     * @function
+     * @param {number} tileStatus
+     * @return {undefined}
+     */
     setFlag: function(tileStatus) {
       this.tiles[tileStatus.row][tileStatus.col].state = 'flagged';
+    },
+    /**
+     * open neighbor
+     * @function
+     * @param {number} row
+     * @param {number} col
+     * @return {undefined}
+     */
+    opneNeighbor: function(row, col) {
+      const tileStatus = this.tiles[row][col].state;
+      if (tileStatus === 'unopened') {
+        const mineCount = this.surroundedMineCount(row, col);
+        this.changeClassNameBasedMineCount(row, col, mineCount);
+        if (mineCount === 0) {
+          this.loopNeighborWithCallback(row, col, this.opneNeighbor);
+        }
+      }
+    },
+    /**
+     * loop neighbor with callback function
+     * @function
+     * @param {number} row
+     * @param {number} col
+     * @param {number} callback
+     * @param {number} callbackArgu
+     * @return {number}
+     */
+    loopNeighborWithCallback: function(row, col, callback, callbackArgu) {
+      const surroundedPosition = [
+        [-1, -1], [-1, 0], [-1, 1],
+        [0, -1], [0, 1],
+        [1, -1], [1, 0], [1, 1],
+      ];
+      let resultCallbackArgu = callbackArgu;
+      for (let i = 0; i < surroundedPosition.length; i++) {
+        const rowChecking = row + surroundedPosition[i][0];
+        const colChecking = col + surroundedPosition[i][1];
+        if (this.isValidTile(rowChecking, colChecking)) continue;
+        resultCallbackArgu =  callback(rowChecking, colChecking, resultCallbackArgu);
+      }
+      return resultCallbackArgu;
+    },
+    /**
+     * plus mine count
+     * @function
+     * @param {number} row
+     * @param {number} col
+     * @param {number} mineCount
+     * @return {number}
+     */
+    plusMineCount: function(row, col, mineCount) {
+      let resultCount = mineCount;
+      if (this.tiles[row][col].mined) {
+        resultCount += 1;
+      }
+      return resultCount;
     },
   },
 };
