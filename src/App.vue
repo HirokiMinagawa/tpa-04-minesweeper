@@ -58,7 +58,6 @@ export default {
      * open tile
      * @function
      * @param {object} tileStatus
-     * @return {undefined}
      */
     openTile: function(tileStatus) {
       if (tileStatus.mined) {
@@ -69,14 +68,13 @@ export default {
         const mineCount = this.surroundedMineCount(row, col);
         this.changeClassNameBasedMineCount(row, col, mineCount);
         if (mineCount === 0) {
-          this.loopNeighborWithCallback(row, col, this.opneNeighbor);
+          this.loopNeighborWithMethod(row, col, this.opneNeighbor);
         }
       }
     },
     /**
      * show all tile
      * @function
-     * @return {undefined}
      */
     showAll: function() {
       for (let i = 0, len = this.tiles.length; i < len; i += 1) {
@@ -102,7 +100,7 @@ export default {
      */
     surroundedMineCount: function(row, col){
       let mineCount = 0;
-      mineCount = this.loopNeighborWithCallback(row, col, this.plusMineCount, mineCount);
+      mineCount = this.loopNeighborWithMethod(row, col, this.plusMineCountIfMined, mineCount);
       return mineCount;
     },
     /**
@@ -121,7 +119,6 @@ export default {
      * @param {number} row
      * @param {number} col
      * @param {number} mineCount
-     * @return {undefined}
      */
     changeClassNameBasedMineCount: function(row, col, mineCount) {
       this.tiles[row][col].state = `mine-neighbor-${mineCount}`;
@@ -131,7 +128,6 @@ export default {
      * set flag
      * @function
      * @param {number} tileStatus
-     * @return {undefined}
      */
     setFlag: function(tileStatus) {
       this.tiles[tileStatus.row][tileStatus.col].state = 'flagged';
@@ -141,7 +137,6 @@ export default {
      * @function
      * @param {number} row
      * @param {number} col
-     * @return {undefined}
      */
     opneNeighbor: function(row, col) {
       const tileStatus = this.tiles[row][col].state;
@@ -149,43 +144,43 @@ export default {
         const mineCount = this.surroundedMineCount(row, col);
         this.changeClassNameBasedMineCount(row, col, mineCount);
         if (mineCount === 0) {
-          this.loopNeighborWithCallback(row, col, this.opneNeighbor);
+          this.loopNeighborWithMethod(row, col, this.opneNeighbor);
         }
       }
     },
     /**
-     * loop neighbor with callback function
+     * loop neighbor with method
      * @function
      * @param {number} row
      * @param {number} col
-     * @param {number} callback
-     * @param {number} callbackArgu
+     * @param {number} method
+     * @param {number} methodArgu
      * @return {number}
      */
-    loopNeighborWithCallback: function(row, col, callback, callbackArgu) {
+    loopNeighborWithMethod: function(row, col, method, methodArgu) {
       const surroundedPosition = [
         [-1, -1], [-1, 0], [-1, 1],
         [0, -1], [0, 1],
         [1, -1], [1, 0], [1, 1],
       ];
-      let resultCallbackArgu = callbackArgu;
+      let resultmethodArgu = methodArgu;
       for (let i = 0; i < surroundedPosition.length; i++) {
         const rowChecking = row + surroundedPosition[i][0];
         const colChecking = col + surroundedPosition[i][1];
         if (this.isValidTile(rowChecking, colChecking)) continue;
-        resultCallbackArgu =  callback(rowChecking, colChecking, resultCallbackArgu);
+        resultmethodArgu =  method(rowChecking, colChecking, resultmethodArgu);
       }
-      return resultCallbackArgu;
+      return resultmethodArgu;
     },
     /**
-     * plus mine count
+     * plus mine count if mined
      * @function
      * @param {number} row
      * @param {number} col
      * @param {number} mineCount
      * @return {number}
      */
-    plusMineCount: function(row, col, mineCount) {
+    plusMineCountIfMined: function(row, col, mineCount) {
       let resultCount = mineCount;
       if (this.tiles[row][col].mined) {
         resultCount += 1;
