@@ -130,7 +130,10 @@ export default {
      * @param {number} tileStatus
      */
     setFlag: function(tileStatus) {
-      this.tiles[tileStatus.row][tileStatus.col].state = 'flagged';
+      let tileState = this.tiles[tileStatus.row][tileStatus.col].state;
+      if (tileState === 'unopened') {
+        this.tiles[tileStatus.row][tileStatus.col].state = 'flagged';
+      }
     },
     /**
      * open neighbor
