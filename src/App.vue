@@ -131,8 +131,13 @@ export default {
      */
     setFlag: function(tileStatus) {
       let tileState = this.tiles[tileStatus.row][tileStatus.col].state;
-      if (tileState === 'unopened') {
+      switch (tileState) {
+      case 'unopened':
         this.tiles[tileStatus.row][tileStatus.col].state = 'flagged';
+        break;
+      case 'flagged':
+        this.tiles[tileStatus.row][tileStatus.col].state = 'unopened';
+        break;
       }
     },
     /**
